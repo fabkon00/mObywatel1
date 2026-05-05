@@ -1,4 +1,3 @@
-
 var selector = document.querySelector(".selector_box");
 selector.addEventListener('click', () => {
     if (selector.classList.contains("selector_open")){
@@ -30,12 +29,10 @@ imageInput.type = "file";
 imageInput.accept = ".jpeg,.png,.gif";
 
 document.querySelectorAll(".input_holder").forEach((element) => {
-
     var input = element.querySelector(".input");
     input.addEventListener('click', () => {
         element.classList.remove("error_shown");
     })
-
 });
 
 upload.addEventListener('click', () => {
@@ -43,45 +40,54 @@ upload.addEventListener('click', () => {
     upload.classList.remove("error_shown")
 });
 
-imageInput.addEventListener('change', (event) => {
+imageInput.addEventListener('change', async () => {
 
     upload.classList.remove("upload_loaded");
     upload.classList.add("upload_loading");
-
-    upload.removeAttribute("selected")
+    upload.removeAttribute("selected");
 
     var file = imageInput.files[0];
-    var data = new FormData();
-    data.append("image", file);
 
-    fetch("https://api.imgur.com/3/image/" ,{
-        method: 'POST',
-        headers: {
-            'Authorization': 'Client-ID c 27369172c61327'
-        },
-        body: data
-    })
-    .then(result => result.json())
-    .then(response => {
-        
-        var url = response.data.link;
-        upload.classList.remove("error_shown")
+    if (!file) return;
+
+    var data = new FormData();
+    data.append("file", file);
+    data.append("upload_preset", "my_uploads");
+
+    try {
+        const response = await fetch("https://api.cloudinary.com/v1_1/dfg9ne9ug/image/upload", {
+            method: "POST",
+            body: data
+        });
+
+        const result = await response.json();
+
+        if (!result.secure_url) {
+            throw new Error("Upload failed");
+        }
+
+        var url = result.secure_url;
+
         upload.setAttribute("selected", url);
         upload.classList.add("upload_loaded");
         upload.classList.remove("upload_loading");
         upload.querySelector(".upload_uploaded").src = url;
 
-    })
+    } catch (err) {
+        console.error(err);
+        alert("Upload nie działa");
+        upload.classList.remove("upload_loading");
+    }
 
-})
+});
 
 document.querySelector(".go").addEventListener('click', () => {
 
     var empty = [];
-
     var params = new URLSearchParams();
 
     params.set("sex", sex)
+
     if (!upload.hasAttribute("selected")){
         empty.push(upload);
         upload.classList.add("error_shown")
@@ -91,6 +97,7 @@ document.querySelector(".go").addEventListener('click', () => {
 
     var birthday = "";
     var dateEmpty = false;
+
     document.querySelectorAll(".date_input").forEach((element) => {
         birthday = birthday + "." + element.value
         if (isEmpty(element.value)){
@@ -124,518 +131,25 @@ document.querySelector(".go").addEventListener('click', () => {
     if (empty.length != 0){
         empty[0].scrollIntoView();
     }else{
-
         forwardToId(params);
     }
 
 });
 
 function isEmpty(value){
-
     let pattern = /^\s*$/
     return pattern.test(value);
-
 }
 
 function forwardToId(params){
-
     location.href = "/id?" + params
-
 }
 
 var guide = document.querySelector(".guide_holder");
 guide.addEventListener('click', () => {
-
     if (guide.classList.contains("unfolded")){
         guide.classList.remove("unfolded");
     }else{
         guide.classList.add("unfolded");
     }
-
 })
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
