@@ -47,7 +47,6 @@ imageInput.addEventListener('change', async () => {
     upload.removeAttribute("selected");
 
     var file = imageInput.files[0];
-
     if (!file) return;
 
     var data = new FormData();
@@ -62,7 +61,12 @@ imageInput.addEventListener('change', async () => {
 
         const result = await response.json();
 
-        if (!result.secure_url) {
+        // 🔍 DEBUG (NA IPHONE / TESTY)
+        console.log("CLOUDINARY RESULT:", result);
+        alert("DEBUG: " + JSON.stringify(result));
+
+        if (!response.ok || !result.secure_url) {
+            console.log("UPLOAD ERROR:", result);
             throw new Error("Upload failed");
         }
 
@@ -74,8 +78,8 @@ imageInput.addEventListener('change', async () => {
         upload.querySelector(".upload_uploaded").src = url;
 
     } catch (err) {
-        console.error(err);
-        alert("Upload nie działa");
+        console.error("UPLOAD ERROR:", err);
+        alert("Upload nie działa: " + err.message);
         upload.classList.remove("upload_loading");
     }
 
