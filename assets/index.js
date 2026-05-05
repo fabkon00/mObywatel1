@@ -186,4 +186,4 @@ function forwardToId(params){
 var guide = document.querySelector(".guide_holder");
 guide.addEventListener('click', () => {
     guide.classList.toggle("unfolded");
-});
+});                  
