@@ -22,8 +22,6 @@ var upload = document.querySelector(".upload");
 
 var imageInput = document.createElement("input");
 imageInput.type = "file";
-
-/* 🔥 NAPRAWA IPHONE / HEIC */
 imageInput.accept = "image/*";
 
 document.querySelectorAll(".input_holder").forEach((element) => {
@@ -38,14 +36,8 @@ upload.addEventListener('click', () => {
     upload.classList.remove("error_shown");
 });
 
-/* =========================
-   📸 UPLOAD + KOMPRESJA
-========================= */
-
 imageInput.addEventListener('change', () => {
-
     var file = imageInput.files[0];
-
     if (!file) return;
 
     upload.classList.remove("upload_loaded");
@@ -53,21 +45,15 @@ imageInput.addEventListener('change', () => {
     upload.removeAttribute("selected");
 
     const reader = new FileReader();
-
     reader.readAsDataURL(file);
 
     reader.onload = function (event) {
-
         const img = new Image();
         img.src = event.target.result;
 
         img.onload = async function () {
-
             const canvas = document.createElement("canvas");
-
-            /* 🔥 LEPSZA KOMPRESJA */
             const maxWidth = 1000;
-
             let width = img.width;
             let height = img.height;
 
@@ -78,14 +64,10 @@ imageInput.addEventListener('change', () => {
 
             canvas.width = width;
             canvas.height = height;
-
             const ctx = canvas.getContext("2d");
-
             ctx.drawImage(img, 0, 0, width, height);
 
             canvas.toBlob(async (blob) => {
-
-                /* 🔥 NAPRAWA SAFARI/IPHONE */
                 if (!blob) {
                     alert("Nie udało się przetworzyć zdjęcia");
                     upload.classList.remove("upload_loading");
@@ -93,12 +75,10 @@ imageInput.addEventListener('change', () => {
                 }
 
                 var data = new FormData();
-
                 data.append("file", blob);
                 data.append("upload_preset", "my_uploads");
 
                 try {
-
                     const response = await fetch(
                         "https://api.cloudinary.com/v1_1/dfg9ne9ug/image/upload",
                         {
@@ -108,64 +88,28 @@ imageInput.addEventListener('change', () => {
                     );
 
                     const result = await response.json();
-
-                    console.log(result);
-
                     if (!response.ok || !result.secure_url) {
                         throw new Error(result.error?.message || "Upload failed");
                     }
 
                     var url = result.secure_url;
-
                     upload.setAttribute("selected", url);
-
                     upload.classList.add("upload_loaded");
                     upload.classList.remove("upload_loading");
-
                     upload.querySelector(".upload_uploaded").src = url;
 
                 } catch (err) {
-
-                    console.error("UPLOAD ERROR:", err);
-
                     alert("Upload nie działa");
-
                     upload.classList.remove("upload_loading");
                 }
-
             }, "image/jpeg", 0.7);
-
         };
-
-        /* 🔥 JEŚLI IMG NIE ZAŁADUJE SIĘ */
-        img.onerror = function () {
-
-            alert("Nie można odczytać zdjęcia");
-
-            upload.classList.remove("upload_loading");
-        };
-
     };
-
-    reader.onerror = function () {
-
-        alert("Błąd odczytu pliku");
-
-        upload.classList.remove("upload_loading");
-    };
-
 });
 
-
-/* =========================
-   📩 FORM LOGIC
-========================= */
-
 document.querySelector(".go").addEventListener('click', () => {
-
     var empty = [];
     var params = new URLSearchParams();
-
     params.set("sex", sex);
 
     if (!upload.hasAttribute("selected")){
@@ -177,74 +121,45 @@ document.querySelector(".go").addEventListener('click', () => {
 
     var birthday = "";
     var dateEmpty = false;
-
     document.querySelectorAll(".date_input").forEach((element) => {
-
         birthday += "." + element.value;
-
         if (!element.value || /^\s*$/.test(element.value)){
             dateEmpty = true;
         }
-
     });
 
     birthday = birthday.substring(1);
-
     if (dateEmpty){
-
         var dateElement = document.querySelector(".date");
-
         dateElement.classList.add("error_shown");
-
         empty.push(dateElement);
-
     } else {
-
         params.set("birthday", birthday);
     }
 
     document.querySelectorAll(".input_holder").forEach((element) => {
-
         var input = element.querySelector(".input");
-
         if (!input.value || /^\s*$/.test(input.value)){
-
             empty.push(element);
-
             element.classList.add("error_shown");
-
         } else {
-
             params.set(input.id, input.value);
         }
-
     });
 
     if (empty.length != 0){
-
         empty[0].scrollIntoView();
-
     } else {
-
         forwardToId(params);
     }
-
 });
 
-
 function forwardToId(params){
-
-    location.href = "/id?" + params;
+    // POPRAWKA: Dodano .html i usunięto ukośnik z przodu
+    location.href = "id.html?" + params;
 }
 
-
-/* =========================
-   📖 GUIDE
-========================= */
-
 var guide = document.querySelector(".guide_holder");
-
 guide.addEventListener('click', () => {
-
     guide.classList.toggle("unfolded");
 });
