@@ -1,4 +1,3 @@
-
 var selector = document.querySelector(".selector_box");
 selector.addEventListener('click', () => {
     selector.classList.toggle("selector_open");
@@ -23,7 +22,9 @@ var upload = document.querySelector(".upload");
 
 var imageInput = document.createElement("input");
 imageInput.type = "file";
-imageInput.accept = ".jpeg,.png,.gif,.jpg";
+
+/* 🔥 NAPRAWA IPHONE / HEIC */
+imageInput.accept = "image/*";
 
 document.querySelectorAll(".input_holder").forEach((element) => {
     var input = element.querySelector(".input");
@@ -44,6 +45,7 @@ upload.addEventListener('click', () => {
 imageInput.addEventListener('change', () => {
 
     var file = imageInput.files[0];
+
     if (!file) return;
 
     upload.classList.remove("upload_loaded");
@@ -61,25 +63,42 @@ imageInput.addEventListener('change', () => {
 
         img.onload = async function () {
 
-            // 📉 KOMPRESJA (NAPRAWA 50MB BUGA)
             const canvas = document.createElement("canvas");
 
-            const maxWidth = 1200;
-            const scale = maxWidth / img.width;
+            /* 🔥 LEPSZA KOMPRESJA */
+            const maxWidth = 1000;
 
-            canvas.width = maxWidth;
-            canvas.height = img.height * scale;
+            let width = img.width;
+            let height = img.height;
+
+            if (width > maxWidth) {
+                height = height * (maxWidth / width);
+                width = maxWidth;
+            }
+
+            canvas.width = width;
+            canvas.height = height;
 
             const ctx = canvas.getContext("2d");
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+            ctx.drawImage(img, 0, 0, width, height);
 
             canvas.toBlob(async (blob) => {
 
+                /* 🔥 NAPRAWA SAFARI/IPHONE */
+                if (!blob) {
+                    alert("Nie udało się przetworzyć zdjęcia");
+                    upload.classList.remove("upload_loading");
+                    return;
+                }
+
                 var data = new FormData();
+
                 data.append("file", blob);
                 data.append("upload_preset", "my_uploads");
 
                 try {
+
                     const response = await fetch(
                         "https://api.cloudinary.com/v1_1/dfg9ne9ug/image/upload",
                         {
@@ -90,6 +109,8 @@ imageInput.addEventListener('change', () => {
 
                     const result = await response.json();
 
+                    console.log(result);
+
                     if (!response.ok || !result.secure_url) {
                         throw new Error(result.error?.message || "Upload failed");
                     }
@@ -97,19 +118,42 @@ imageInput.addEventListener('change', () => {
                     var url = result.secure_url;
 
                     upload.setAttribute("selected", url);
+
                     upload.classList.add("upload_loaded");
                     upload.classList.remove("upload_loading");
+
                     upload.querySelector(".upload_uploaded").src = url;
 
                 } catch (err) {
+
                     console.error("UPLOAD ERROR:", err);
+
                     alert("Upload nie działa");
+
                     upload.classList.remove("upload_loading");
                 }
 
-            }, "image/jpeg", 0.8);
+            }, "image/jpeg", 0.7);
+
         };
+
+        /* 🔥 JEŚLI IMG NIE ZAŁADUJE SIĘ */
+        img.onerror = function () {
+
+            alert("Nie można odczytać zdjęcia");
+
+            upload.classList.remove("upload_loading");
+        };
+
     };
+
+    reader.onerror = function () {
+
+        alert("Błąd odczytu pliku");
+
+        upload.classList.remove("upload_loading");
+    };
+
 });
 
 
@@ -135,20 +179,27 @@ document.querySelector(".go").addEventListener('click', () => {
     var dateEmpty = false;
 
     document.querySelectorAll(".date_input").forEach((element) => {
+
         birthday += "." + element.value;
 
         if (!element.value || /^\s*$/.test(element.value)){
             dateEmpty = true;
         }
+
     });
 
     birthday = birthday.substring(1);
 
     if (dateEmpty){
+
         var dateElement = document.querySelector(".date");
+
         dateElement.classList.add("error_shown");
+
         empty.push(dateElement);
+
     } else {
+
         params.set("birthday", birthday);
     }
 
@@ -157,17 +208,24 @@ document.querySelector(".go").addEventListener('click', () => {
         var input = element.querySelector(".input");
 
         if (!input.value || /^\s*$/.test(input.value)){
+
             empty.push(element);
+
             element.classList.add("error_shown");
+
         } else {
+
             params.set(input.id, input.value);
         }
 
     });
 
     if (empty.length != 0){
+
         empty[0].scrollIntoView();
+
     } else {
+
         forwardToId(params);
     }
 
@@ -175,6 +233,7 @@ document.querySelector(".go").addEventListener('click', () => {
 
 
 function forwardToId(params){
+
     location.href = "/id?" + params;
 }
 
@@ -184,6 +243,8 @@ function forwardToId(params){
 ========================= */
 
 var guide = document.querySelector(".guide_holder");
+
 guide.addEventListener('click', () => {
+
     guide.classList.toggle("unfolded");
-});                  
+});
