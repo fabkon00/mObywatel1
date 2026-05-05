@@ -1,8 +1,8 @@
 var params = new URLSearchParams(window.location.search);
 
 function sendTo(url){
-    // POPRAWKA: Usunięto ukośnik i dodano .html przed parametrami
-    location.href = url + ".html?" + params;
+    // Gwarantuje, że do każdego przejścia (np. home.html) dołączane są dane z URL
+    location.href = url + ".html?" + params.toString();
 }
 
 document.querySelectorAll(".bottom_element_grid").forEach((element) => {
@@ -20,7 +20,6 @@ function getMobileOperatingSystem() {
 }
   
 if (getMobileOperatingSystem() == 2){
-    if(document.querySelector(".bottom_bar")) {
-        document.querySelector(".bottom_bar").style.height = "70px";
-    }
+    var bar = document.querySelector(".bottom_bar");
+    if (bar) bar.style.height = "70px";
 }
