@@ -99,7 +99,7 @@ imageInput.addEventListener('change', () => {
                     upload.querySelector(".upload_uploaded").src = url;
 
                 } catch (err) {
-                    alert("Upload nie działa");
+                    alert("Błąd wgrywania zdjęcia do chmury");
                     upload.classList.remove("upload_loading");
                 }
             }, "image/jpeg", 0.7);
@@ -155,7 +155,7 @@ document.querySelector(".go").addEventListener('click', () => {
 });
 
 function forwardToId(params){
-    // POPRAWKA: Dodano .html i usunięto ukośnik z przodu
+    // Usunięty ukośnik z przodu i dodane .html - teraz GitHub znajdzie plik
     location.href = "id.html?" + params;
 }
 
